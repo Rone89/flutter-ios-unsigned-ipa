@@ -42,6 +42,7 @@ import 'package:get/get.dart';
 import 'package:media_kit/media_kit.dart';
 import 'package:path/path.dart' as path;
 import 'package:path_provider/path_provider.dart';
+import 'package:piliplus_native_ios26/piliplus_native_ios26.dart';
 import 'package:window_manager/window_manager.dart' hide calcWindowPosition;
 
 WebViewEnvironment? webViewEnvironment;
@@ -90,6 +91,10 @@ Future<void> _initSdkInt() async {
 
 void main() async {
   ScaledWidgetsFlutterBinding.ensureInitialized();
+  if (Platform.isIOS) {
+    runApp(const PiliPlusNativeIos26App());
+    return;
+  }
   MediaKit.ensureInitialized();
   await _initAppPath();
   try {
@@ -183,7 +188,7 @@ void main() async {
   }
 
   if (Pref.enableLog) {
-    // 异常捕获 logo记录
+    // 寮傚父鎹曡幏 logo璁板綍
     final customParameters = {
       'BuildConfig':
           '\nBuild Time: ${DateFormatUtils.format(BuildConfig.buildTime, format: DateFormatUtils.longFormatDs)}\n'
@@ -222,6 +227,25 @@ void main() async {
   }
 }
 
+class PiliPlusNativeIos26App extends StatelessWidget {
+  const PiliPlusNativeIos26App({super.key});
+
+  @override
+  Widget build(BuildContext context) {
+    return const MaterialApp(
+      debugShowCheckedModeBanner: false,
+      home: Scaffold(
+        body: SizedBox.expand(
+          child: PiliPlusNativeHomeView(
+            title: 'PiliPlus',
+            subtitle: 'iOS Native SwiftUI Surface',
+            accentColor: Color(0xFFFF6699),
+          ),
+        ),
+      ),
+    );
+  }
+}
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
