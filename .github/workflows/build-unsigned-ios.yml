@@ -63,7 +63,7 @@ jobs:
           set -euo pipefail
           CROP_FILE="ios/Pods/TOCropViewController/Objective-C/TOCropViewController/TOCropViewController.m"
           if [ -f "$CROP_FILE" ]; then
-            perl -0pi -e 's/if \(\@available\(iOS 26\.0, \*\)\)/if (false)/g; s/UIViewLayoutRegion/NSInteger/g; s/\[self\.view edgeInsetsForLayoutRegion:layoutRegion\]/UIEdgeInsetsZero/g' "$CROP_FILE"
+            perl -0pi -e 's/if \(\@available\(iOS 26\.0, \*\)\)/#if 0\nif (@available(iOS 26.0, *))/g; s/(\n\s*\}\s*else\s*\{\n\s*CGRect cropViewFrame = CGRectInset\(self\.view\.bounds, 0\.0f, self\.view\.safeAreaInsets\.top\);)/\n#endif$1/s' "$CROP_FILE"
             grep -n "edgeInsetsForLayoutRegion\|if (false)" "$CROP_FILE" || true
           fi
       - name: Build iOS app without code signing
