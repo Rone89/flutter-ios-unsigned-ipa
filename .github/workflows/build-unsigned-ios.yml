@@ -58,6 +58,14 @@ jobs:
           cd ios
           pod install --repo-update
 
+      - name: Patch CocoaPods for runner Xcode SDK
+        run: |
+          set -euo pipefail
+          CROP_FILE="ios/Pods/TOCropViewController/Objective-C/TOCropViewController/TOCropViewController.m"
+          if [ -f "$CROP_FILE" ]; then
+            perl -0pi -e 's/if \(\@available\(iOS 26\.0, \*\)\)/if (false)/g' "$CROP_FILE"
+            grep -n "edgeInsetsForLayoutRegion\|if (false)" "$CROP_FILE" || true
+          fi
       - name: Build iOS app without code signing
         run: flutter build ios --release --no-codesign
 
