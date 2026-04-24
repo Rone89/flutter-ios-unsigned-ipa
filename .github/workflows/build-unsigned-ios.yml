@@ -64,6 +64,7 @@ jobs:
           CROP_FILE="ios/Pods/TOCropViewController/Objective-C/TOCropViewController/TOCropViewController.m"
           if [ -f "$CROP_FILE" ]; then
             perl -ni -e 'print unless /UIViewLayoutRegion|layoutRegion|edgeInsetsForLayoutRegion/' "$CROP_FILE"
+            perl -0pi -e 's/edgeInsets\.top/self.view.safeAreaInsets.top/g; s/edgeInsets\.left/self.view.safeAreaInsets.left/g; s/edgeInsets\.right/self.view.safeAreaInsets.right/g; s/edgeInsets\.bottom/self.view.safeAreaInsets.bottom/g' "$CROP_FILE"
             grep -n "UIViewLayoutRegion\|layoutRegion\|edgeInsetsForLayoutRegion" "$CROP_FILE" || true
           fi
       - name: Build iOS app without code signing
