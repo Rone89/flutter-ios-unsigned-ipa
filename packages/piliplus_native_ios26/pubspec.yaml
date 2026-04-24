@@ -1,0 +1,18 @@
+﻿name: piliplus_native_ios26
+version: 0.1.0
+publish_to: none
+description: Native iOS 26 Liquid Glass SwiftUI surfaces for Flutter iOS apps.
+
+environment:
+  sdk: '>=3.3.0 <4.0.0'
+  flutter: '>=3.22.0'
+
+dependencies:
+  flutter:
+    sdk: flutter
+
+flutter:
+  plugin:
+    platforms:
+      ios:
+        pluginClass: PiliPlusNativeIos26Plugin

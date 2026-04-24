@@ -1,0 +1,87 @@
+﻿name: Build unsigned iOS IPA and Release
+
+on:
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: Release tag to create
+        required: false
+        default: unsigned-ios-latest
+  push:
+    tags:
+      - 'unsigned-ios-*'
+
+permissions:
+  contents: write
+
+jobs:
+  build-unsigned-ios:
+    name: Build unsigned IPA
+    runs-on: macos-15
+    timeout-minutes: 60
+
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Set up Flutter
+        uses: subosito/flutter-action@v2
+        with:
+          channel: stable
+          cache: true
+
+      - name: Show tool versions
+        run: |
+          flutter --version
+          xcodebuild -version
+          ruby --version
+
+      - name: Get Flutter packages
+        run: flutter pub get
+
+      - name: Install CocoaPods dependencies
+        run: |
+          cd ios
+          pod install --repo-update
+
+      - name: Build iOS app without code signing
+        run: flutter build ios --release --no-codesign
+
+      - name: Package unsigned IPA
+        run: |
+          set -euo pipefail
+          APP_PATH="build/ios/iphoneos/Runner.app"
+          IPA_DIR="build/ios/unsigned-ipa"
+          if [ ! -d "$APP_PATH" ]; then
+            echo "Runner.app not found at $APP_PATH"
+            exit 1
+          fi
+          rm -rf "$IPA_DIR"
+          mkdir -p "$IPA_DIR/Payload"
+          cp -R "$APP_PATH" "$IPA_DIR/Payload/Runner.app"
+          cd "$IPA_DIR"
+          zip -qry PiliPlus-unsigned.ipa Payload
+          shasum -a 256 PiliPlus-unsigned.ipa > PiliPlus-unsigned.ipa.sha256
+          ls -lh PiliPlus-unsigned.ipa PiliPlus-unsigned.ipa.sha256
+
+      - name: Upload unsigned IPA artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: PiliPlus-unsigned-ipa
+          path: |
+            build/ios/unsigned-ipa/PiliPlus-unsigned.ipa
+            build/ios/unsigned-ipa/PiliPlus-unsigned.ipa.sha256
+          if-no-files-found: error
+
+      - name: Create or update GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          tag_name: ${{ github.event.inputs.release_tag || github.ref_name }}
+          name: PiliPlus unsigned iOS IPA
+          body: |
+            Unsigned iOS IPA built by GitHub Actions.
+
+            This IPA is not code signed and usually requires re-signing before installation on a normal iPhone.
+          files: |
+            build/ios/unsigned-ipa/PiliPlus-unsigned.ipa
+            build/ios/unsigned-ipa/PiliPlus-unsigned.ipa.sha256
