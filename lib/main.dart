@@ -183,7 +183,8 @@ void main() async {
   }
 
   if (Pref.enableLog) {
-    // 閻庢鍠栭崐鎼佹偉閸洖绠查柡鍥ｂ偓宕囶唵 logo闁荤姳鐒﹀妯肩礊?    final customParameters = {
+    // 寮傚父鎹曡幏 logo璁板綍
+    final customParameters = {
       'BuildConfig':
           '\nBuild Time: ${DateFormatUtils.format(BuildConfig.buildTime, format: DateFormatUtils.longFormatDs)}\n'
           'Commit Hash: ${BuildConfig.commitHash}',
