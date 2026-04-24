@@ -39,6 +39,14 @@ jobs:
       - name: Get Flutter packages
         run: flutter pub get
 
+      - name: Patch connectivity_plus for runner Xcode SDK
+        run: |
+          set -euo pipefail
+          PATCH_FILE="$HOME/.pub-cache/hosted/pub.dev/connectivity_plus-7.1.1/ios/connectivity_plus/Sources/connectivity_plus/PathMonitorConnectivityProvider.swift"
+          if [ -f "$PATCH_FILE" ]; then
+            perl -0pi -e 's/path\.isUltraConstrained/false/g' "$PATCH_FILE"
+            grep -n "isUltraConstrained\|false" "$PATCH_FILE" || true
+          fi
       - name: Install CocoaPods dependencies
         run: |
           cd ios
