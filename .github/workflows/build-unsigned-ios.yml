@@ -27,7 +27,7 @@ jobs:
       - name: Set up Flutter
         uses: subosito/flutter-action@v2
         with:
-          channel: stable
+          flutter-version: '3.41.6'
           cache: true
 
       - name: Show tool versions
@@ -85,4 +85,5 @@ jobs:
           files: |
             build/ios/unsigned-ipa/PiliPlus-unsigned.ipa
             build/ios/unsigned-ipa/PiliPlus-unsigned.ipa.sha256
+
 
