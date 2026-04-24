@@ -1,4 +1,4 @@
-﻿name: PiliPlus
+name: PiliPlus
 description: A new Flutter project.
 # The following line prevents the package from being accidentally published to
 # pub.dev using `flutter pub publish`. This is preferred for private packages.
@@ -39,7 +39,8 @@ dependencies:
   # The following adds the Cupertino Icons font to your application.
   # Use with the CupertinoIcons class for iOS style icons.
   cupertino_icons: ^1.0.8
-  # 鍔ㄦ€佸彇鑹?  dynamic_color: ^1.8.1
+  # dynamic color
+  dynamic_color: ^1.8.1
 
   # get: ^4.7.2
   get:
@@ -139,7 +140,8 @@ dependencies:
   url_launcher: ^6.3.1
   # 闃叉姈鑺傛祦
   easy_debounce: ^2.0.3
-  # 楂樺抚鐜?  flutter_displaymode: ^0.7.0
+  # refresh rate
+  flutter_displaymode: ^0.7.0
   # scheme璺宠浆
   app_links: ^7.0.0
   # 寮瑰箷
@@ -172,7 +174,8 @@ dependencies:
   # nil: ^1.1.1
   catcher_2: ^2.1.0
   logger: ^2.5.0
-  #鐎戝竷娴?  waterfall_flow: ^3.1.0
+  # waterfall layout
+  waterfall_flow: ^3.1.1
   #璺戦┈鐏?  # marquee: ^2.3.0
   #瀵屾枃鏈?  # extended_text: ^14.1.0
   # chat_bottom_container: ^0.2.0
