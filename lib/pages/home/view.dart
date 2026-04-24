@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:PiliPlus/common/style.dart';
 import 'package:PiliPlus/common/widgets/custom_height_widget.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
@@ -12,6 +14,7 @@ import 'package:PiliPlus/utils/feed_back.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
+import 'package:piliplus_native_ios26/piliplus_native_ios26.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -74,6 +77,8 @@ class _HomePageState extends CommonPageState<HomePage>
         if (!_mainController.useSideBar &&
             MediaQuery.sizeOf(context).isPortrait)
           customAppBar(theme),
+        if (Platform.isIOS)
+          const _NativeIosHomeHeader(),
         tabBar,
         Expanded(
           child: onBuild(
@@ -163,7 +168,7 @@ class _HomePageState extends CommonPageState<HomePage>
                 Icon(
                   Icons.search_outlined,
                   color: theme.colorScheme.onSecondaryContainer,
-                  semanticLabel: '搜索',
+                  semanticLabel: '鎼滅储',
                 ),
                 const SizedBox(width: 10),
                 Expanded(
@@ -191,7 +196,7 @@ Widget userAvatar({
   required MainController mainController,
 }) {
   return Semantics(
-    label: "我的",
+    label: "鎴戠殑",
     child: Obx(
       () {
         if (mainController.accountService.isLogin.value) {
@@ -245,7 +250,7 @@ Widget userAvatar({
           width: 38,
           height: 38,
           child: IconButton(
-            tooltip: '点击登录',
+            tooltip: '鐐瑰嚮鐧诲綍',
             style: IconButton.styleFrom(
               padding: .zero,
               backgroundColor: theme.colorScheme.onInverseSurface,
@@ -270,7 +275,7 @@ Widget msgBadge(MainController mainController) {
         final count = mainController.msgUnReadCount.value;
         final isNumBadge = mainController.msgBadgeMode == .number;
         return IconButton(
-          tooltip: '消息',
+          tooltip: '娑堟伅',
           onPressed: () {
             mainController
               ..msgUnReadCount.value = ''
@@ -291,4 +296,26 @@ Widget msgBadge(MainController mainController) {
       return const SizedBox.shrink();
     },
   );
+}
+
+class _NativeIosHomeHeader extends StatelessWidget {
+  const _NativeIosHomeHeader();
+
+  @override
+  Widget build(BuildContext context) {
+    return const Padding(
+      padding: EdgeInsets.fromLTRB(12, 8, 12, 10),
+      child: SizedBox(
+        height: 230,
+        child: ClipRRect(
+          borderRadius: BorderRadius.all(Radius.circular(28)),
+          child: PiliPlusNativeHomeView(
+            title: 'PiliPlus',
+            subtitle: 'Native iOS surface inside the Flutter home feed',
+            accentColor: Color(0xFFFF6699),
+          ),
+        ),
+      ),
+    );
+  }
 }
