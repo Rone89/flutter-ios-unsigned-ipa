@@ -47,7 +47,7 @@ struct NativeHomeConfiguration {
     init(arguments args: Any?) {
         let values = args as? [String: Any]
         title = values?["title"] as? String ?? "PiliPlus"
-        subtitle = values?["subtitle"] as? String ?? "Native iOS 26 UI"
+        subtitle = values?["subtitle"] as? String ?? "Native iOS UI"
 
         if let rawValue = values?["accentColor"] as? Int64 {
             accentColor = Color(argb: UInt32(truncatingIfNeeded: rawValue))
@@ -65,10 +65,10 @@ struct NativeHomeRootView: View {
     @State private var searchText = ""
 
     var body: some View {
-        NavigationStack {
+        NavigationView {
             ZStack {
                 NativeBackdrop(accentColor: configuration.accentColor)
-                    .ignoresSafeArea()
+                    .edgesIgnoringSafeArea(.all)
 
                 ScrollView {
                     VStack(alignment: .leading, spacing: 18) {
@@ -82,18 +82,12 @@ struct NativeHomeRootView: View {
                     .padding(.bottom, 28)
                 }
             }
-            .navigationTitle(configuration.title)
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                    } label: {
-                        Image(systemName: "person.crop.circle")
-                    }
-                    .nativeGlassButtonStyle(prominent: false)
-                }
-            }
+            .navigationBarTitle(configuration.title, displayMode: .inline)
+            .navigationBarItems(trailing: Button(action: {}) {
+                Image(systemName: "person.crop.circle")
+            })
         }
+        .navigationViewStyle(StackNavigationViewStyle())
     }
 }
 
@@ -123,24 +117,30 @@ struct NativeBackdrop: View {
     let accentColor: Color
 
     var body: some View {
-        LinearGradient(
-            colors: [accentColor.opacity(0.28), .blue.opacity(0.10), .purple.opacity(0.12)],
-            startPoint: .topLeading,
-            endPoint: .bottomTrailing
-        )
-        .overlay(alignment: .topTrailing) {
+        ZStack(alignment: .topTrailing) {
+            LinearGradient(
+                gradient: Gradient(colors: [accentColor.opacity(0.28), Color.blue.opacity(0.10), Color.purple.opacity(0.12)]),
+                startPoint: .topLeading,
+                endPoint: .bottomTrailing
+            )
+
             Circle()
                 .fill(accentColor.opacity(0.22))
                 .frame(width: 240, height: 240)
                 .blur(radius: 42)
                 .offset(x: 80, y: -80)
-        }
-        .overlay(alignment: .bottomLeading) {
-            Circle()
-                .fill(.cyan.opacity(0.18))
-                .frame(width: 280, height: 280)
-                .blur(radius: 56)
-                .offset(x: -90, y: 120)
+
+            VStack {
+                Spacer()
+                HStack {
+                    Circle()
+                        .fill(Color.blue.opacity(0.16))
+                        .frame(width: 280, height: 280)
+                        .blur(radius: 56)
+                        .offset(x: -90, y: 120)
+                    Spacer()
+                }
+            }
         }
     }
 }
@@ -153,16 +153,16 @@ struct NativeHeroHeader: View {
             HStack(spacing: 12) {
                 Image(systemName: "play.tv.fill")
                     .font(.system(size: 30, weight: .semibold))
-                    .foregroundStyle(configuration.accentColor)
+                    .foregroundColor(configuration.accentColor)
                     .frame(width: 58, height: 58)
-                    .nativeGlassSurface(cornerRadius: 22, interactive: false)
+                    .nativeGlassSurface(cornerRadius: 22)
 
                 VStack(alignment: .leading, spacing: 4) {
                     Text(configuration.title)
-                        .font(.system(.largeTitle, design: .rounded, weight: .bold))
+                        .font(.system(size: 34, weight: .bold, design: .rounded))
                     Text(configuration.subtitle)
                         .font(.callout)
-                        .foregroundStyle(.secondary)
+                        .foregroundColor(.secondary)
                 }
             }
 
@@ -173,7 +173,7 @@ struct NativeHeroHeader: View {
             }
         }
         .padding(18)
-        .nativeGlassSurface(cornerRadius: 28, interactive: true)
+        .nativeGlassSurface(cornerRadius: 28)
     }
 }
 
@@ -187,7 +187,7 @@ struct NativeMetric: View {
                 .font(.headline)
             Text(title)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
         }
         .frame(maxWidth: .infinity, alignment: .leading)
     }
@@ -200,22 +200,19 @@ struct NativeSearchBar: View {
     var body: some View {
         HStack(spacing: 10) {
             Image(systemName: "magnifyingglass")
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
             TextField("搜索视频、番剧、UP 主", text: $text)
-                .textInputAutocapitalization(.never)
-                .autocorrectionDisabled()
-            Button {
-                text = ""
-            } label: {
+                .autocapitalization(.none)
+                .disableAutocorrection(true)
+            Button(action: { text = "" }) {
                 Image(systemName: "xmark.circle.fill")
-                    .foregroundStyle(.secondary)
+                    .foregroundColor(.secondary)
             }
             .opacity(text.isEmpty ? 0 : 1)
-            .accessibilityLabel("清空搜索")
         }
         .padding(.horizontal, 14)
         .frame(height: 50)
-        .nativeGlassSurface(cornerRadius: 18, tint: accentColor.opacity(0.08), interactive: true)
+        .nativeGlassSurface(cornerRadius: 18, tint: accentColor.opacity(0.08))
     }
 }
 
@@ -224,41 +221,31 @@ struct NativeCategoryPicker: View {
     let accentColor: Color
 
     var body: some View {
-        if #available(iOS 26, *) {
-            GlassEffectContainer(spacing: 8) {
-                pickerContent
-            }
-        } else {
-            pickerContent
-        }
-    }
-
-    private var pickerContent: some View {
-        HStack(spacing: 8) {
-            ForEach(NativeCategory.allCases) { category in
-                Button {
-                    withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
-                        selection = category
-                    }
-                } label: {
-                    Label(category.rawValue, systemImage: category.symbolName)
-                        .font(.subheadline.weight(.semibold))
-                        .labelStyle(.titleAndIcon)
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: 8) {
+                ForEach(NativeCategory.allCases) { category in
+                    Button(action: {
+                        withAnimation(.spring(response: 0.28, dampingFraction: 0.82)) {
+                            selection = category
+                        }
+                    }) {
+                        HStack(spacing: 6) {
+                            Image(systemName: category.symbolName)
+                            Text(category.rawValue)
+                        }
+                        .font(.subheadline.bold())
                         .padding(.horizontal, 12)
                         .frame(height: 42)
-                        .foregroundStyle(selection == category ? .white : .primary)
-                }
-                .background {
-                    if selection == category {
-                        Capsule().fill(accentColor.gradient)
+                        .foregroundColor(selection == category ? .white : .primary)
+                        .background(selection == category ? accentColor : Color.clear)
+                        .clipShape(Capsule())
                     }
+                    .buttonStyle(PlainButtonStyle())
                 }
-                .clipShape(Capsule())
-                .nativeGlassButtonStyle(prominent: selection == category)
             }
+            .padding(6)
         }
-        .padding(6)
-        .nativeGlassSurface(cornerRadius: 24, interactive: false)
+        .nativeGlassSurface(cornerRadius: 24)
     }
 }
 
@@ -276,7 +263,7 @@ struct NativeVideoGrid: View {
             ForEach(0..<8, id: \.self) { index in
                 NativeVideoCard(
                     title: "\(category.rawValue) · 原生卡片 \(index + 1)",
-                    subtitle: index.isMultiple(of: 2) ? "Liquid Glass" : "SwiftUI",
+                    subtitle: index.isMultiple(of: 2) ? "Native blur" : "SwiftUI",
                     accentColor: accentColor,
                     index: index
                 )
@@ -297,66 +284,59 @@ struct NativeVideoCard: View {
 
     var body: some View {
         VStack(alignment: .leading, spacing: 10) {
-            RoundedRectangle(cornerRadius: 18, style: .continuous)
-                .fill(
-                    LinearGradient(
-                        colors: [accentColor.opacity(0.72), .purple.opacity(0.48), .blue.opacity(0.36)],
-                        startPoint: .topLeading,
-                        endPoint: .bottomTrailing
+            ZStack(alignment: .bottomLeading) {
+                RoundedRectangle(cornerRadius: 18, style: .continuous)
+                    .fill(
+                        LinearGradient(
+                            gradient: Gradient(colors: [accentColor.opacity(0.72), Color.purple.opacity(0.48), Color.blue.opacity(0.36)]),
+                            startPoint: .topLeading,
+                            endPoint: .bottomTrailing
+                        )
                     )
-                )
-                .overlay(alignment: .bottomLeading) {
-                    Label(playCount, systemImage: "play.fill")
-                        .font(.caption.weight(.semibold))
-                        .padding(.horizontal, 9)
-                        .padding(.vertical, 6)
-                        .foregroundStyle(.white)
-                        .background(.black.opacity(0.22), in: Capsule())
-                        .padding(10)
+                    .aspectRatio(16 / 10, contentMode: .fit)
+
+                HStack(spacing: 4) {
+                    Image(systemName: "play.fill")
+                    Text(playCount)
                 }
-                .aspectRatio(16 / 10, contentMode: .fit)
+                .font(.caption.bold())
+                .padding(.horizontal, 9)
+                .padding(.vertical, 6)
+                .foregroundColor(.white)
+                .background(Color.black.opacity(0.22))
+                .clipShape(Capsule())
+                .padding(10)
+            }
 
             Text(title)
-                .font(.subheadline.weight(.semibold))
+                .font(.subheadline.bold())
                 .lineLimit(2)
             Text(subtitle)
                 .font(.caption)
-                .foregroundStyle(.secondary)
+                .foregroundColor(.secondary)
         }
         .padding(10)
-        .nativeGlassSurface(cornerRadius: 24, interactive: true)
+        .nativeGlassSurface(cornerRadius: 24)
     }
 }
 
 private extension View {
-    @ViewBuilder
-    func nativeGlassSurface(cornerRadius: CGFloat, tint: Color = .clear, interactive: Bool) -> some View {
-        if #available(iOS 26, *) {
-            if interactive {
-                self.glassEffect(.regular.tint(tint).interactive(), in: .rect(cornerRadius: cornerRadius))
-            } else {
-                self.glassEffect(.regular.tint(tint), in: .rect(cornerRadius: cornerRadius))
-            }
-        } else {
-            self.background(.ultraThinMaterial, in: RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
-                .overlay {
+    func nativeGlassSurface(cornerRadius: CGFloat, tint: Color = .clear) -> some View {
+        self
+            .background(
+                ZStack {
                     RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
-                        .strokeBorder(.white.opacity(0.22), lineWidth: 1)
+                        .fill(Color(.systemBackground).opacity(0.72))
+                    RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                        .fill(tint)
                 }
-        }
-    }
-
-    @ViewBuilder
-    func nativeGlassButtonStyle(prominent: Bool) -> some View {
-        if #available(iOS 26, *) {
-            if prominent {
-                self.buttonStyle(.glassProminent)
-            } else {
-                self.buttonStyle(.glass)
-            }
-        } else {
-            self.buttonStyle(.borderedProminent)
-        }
+            )
+            .overlay(
+                RoundedRectangle(cornerRadius: cornerRadius, style: .continuous)
+                    .stroke(Color.white.opacity(0.22), lineWidth: 1)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: cornerRadius, style: .continuous))
+            .shadow(color: Color.black.opacity(0.08), radius: 18, x: 0, y: 10)
     }
 }
 

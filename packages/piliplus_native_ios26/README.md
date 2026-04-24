@@ -13,7 +13,7 @@ dependencies:
 ## What it provides
 
 - A native iOS home surface using SwiftUI.
-- iOS 26 Liquid Glass styling when available.
+- System blur/glass-style SwiftUI styling that compiles on current GitHub Xcode runners.
 - Safe fallback materials for iOS 15-25.
 - A platform channel for native actions such as opening a URL.
 
@@ -32,3 +32,4 @@ const PiliPlusNativeHomeView(
 
 - Build and test with an Xcode/iOS SDK that contains the iOS 26 Liquid Glass APIs.
 - On older SDKs, Swift may fail to parse iOS 26 APIs even though runtime availability checks are present.
+
