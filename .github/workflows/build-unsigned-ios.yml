@@ -67,8 +67,31 @@ jobs:
             perl -0pi -e 's/edgeInsets\.top/self.view.safeAreaInsets.top/g; s/edgeInsets\.left/self.view.safeAreaInsets.left/g; s/edgeInsets\.right/self.view.safeAreaInsets.right/g; s/edgeInsets\.bottom/self.view.safeAreaInsets.bottom/g' "$CROP_FILE"
             grep -n "UIViewLayoutRegion\|layoutRegion\|edgeInsetsForLayoutRegion" "$CROP_FILE" || true
           fi
+      - name: Build Flutter iOS assets
+        run: flutter build ios --release --no-codesign --config-only
+
       - name: Build iOS app without code signing
-        run: flutter build ios --release --no-codesign
+        run: |
+          set -euo pipefail
+          xcodebuild \
+            -workspace ios/Runner.xcworkspace \
+            -scheme Runner \
+            -configuration Release \
+            -sdk iphoneos \
+            -derivedDataPath build/ios/xcode-derived \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            PROVISIONING_PROFILE_SPECIFIER="" \
+            build
+          mkdir -p build/ios/iphoneos
+          APP_PATH=$(find build/ios/xcode-derived/Build/Products/Release-iphoneos -maxdepth 1 -name "*.app" -type d | head -n 1)
+          if [ -z "$APP_PATH" ]; then
+            echo "No .app produced by xcodebuild"
+            exit 1
+          fi
+          rm -rf build/ios/iphoneos/Runner.app
+          cp -R "$APP_PATH" build/ios/iphoneos/Runner.app
 
       - name: Package unsigned IPA
         run: |
