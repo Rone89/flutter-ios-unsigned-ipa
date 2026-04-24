@@ -112,7 +112,8 @@ abstract final class ThemeUtils {
         backgroundColor: Platform.isIOS ? effectiveColorScheme.surface.withValues(alpha: 0.92) : colorScheme.surface,
         constraints: const BoxConstraints(minWidth: 280, maxWidth: 420),
       ),
-      bottomSheetTheme: BottomSheetThemeData(`r`n        modalBarrierColor: Platform.isIOS ? Colors.black38 : null,
+      bottomSheetTheme: BottomSheetThemeData(
+        modalBarrierColor: Platform.isIOS ? Colors.black38 : null,
         backgroundColor: Platform.isIOS ? effectiveColorScheme.surface.withValues(alpha: 0.92) : colorScheme.surface,
         shape: const RoundedRectangleBorder(
           borderRadius: Style.bottomSheetRadius,

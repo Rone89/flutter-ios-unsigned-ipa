@@ -291,8 +291,13 @@ class _MainAppState extends PopScopeState<MainApp>
           ),
         );
       } else if (Platform.isIOS || _mainController.enableMYBar) {
-        bottomNav = Obx(`r`n          () => NavigationBar(
-            maintainBottomViewPadding: true,`r`n            backgroundColor: Platform.isIOS`r`n                ? CupertinoColors.systemBackground.resolveFrom(context).withValues(alpha: 0.88)`r`n                : null,`r`n            indicatorColor: Platform.isIOS ? Colors.transparent : null,
+        bottomNav = Obx(
+          () => NavigationBar(
+            maintainBottomViewPadding: true,
+            backgroundColor: Platform.isIOS
+                ? CupertinoColors.systemBackground.resolveFrom(context).withValues(alpha: 0.88)
+                : null,
+            indicatorColor: Platform.isIOS ? Colors.transparent : null,
             onDestinationSelected: _mainController.setIndex,
             selectedIndex: _mainController.selectedIndex.value,
             destinations: _mainController.navigationBars
