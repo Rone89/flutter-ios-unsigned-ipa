@@ -1,5 +1,3 @@
-import 'dart:io';
-
 import 'package:PiliPlus/common/style.dart';
 import 'package:PiliPlus/common/widgets/custom_height_widget.dart';
 import 'package:PiliPlus/common/widgets/image/network_img_layer.dart';
@@ -14,7 +12,6 @@ import 'package:PiliPlus/utils/feed_back.dart';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:material_design_icons_flutter/material_design_icons_flutter.dart';
-import 'package:piliplus_native_ios26/piliplus_native_ios26.dart';
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -77,8 +74,6 @@ class _HomePageState extends CommonPageState<HomePage>
         if (!_mainController.useSideBar &&
             MediaQuery.sizeOf(context).isPortrait)
           customAppBar(theme),
-        if (Platform.isIOS)
-          const _NativeIosHomeHeader(),
         tabBar,
         Expanded(
           child: onBuild(
@@ -298,24 +293,3 @@ Widget msgBadge(MainController mainController) {
   );
 }
 
-class _NativeIosHomeHeader extends StatelessWidget {
-  const _NativeIosHomeHeader();
-
-  @override
-  Widget build(BuildContext context) {
-    return const Padding(
-      padding: EdgeInsets.fromLTRB(12, 8, 12, 10),
-      child: SizedBox(
-        height: 230,
-        child: ClipRRect(
-          borderRadius: BorderRadius.all(Radius.circular(28)),
-          child: PiliPlusNativeHomeView(
-            title: 'PiliPlus',
-            subtitle: 'Native iOS surface inside the Flutter home feed',
-            accentColor: Color(0xFFFF6699),
-          ),
-        ),
-      ),
-    );
-  }
-}

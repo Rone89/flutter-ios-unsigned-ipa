@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:PiliPlus/common/style.dart';
 import 'package:PiliPlus/main.dart';
 import 'package:PiliPlus/utils/extension/theme_ext.dart';
@@ -19,8 +21,14 @@ abstract final class ThemeUtils {
         ? null
         : FontWeight.values[appFontWeight];
     late final textStyle = TextStyle(fontWeight: fontWeight);
+    final effectiveColorScheme = Platform.isIOS
+        ? ColorScheme.fromSeed(
+            seedColor: CupertinoColors.systemPink,
+            brightness: isDark ? Brightness.dark : Brightness.light,
+          )
+        : colorScheme;
     ThemeData themeData = ThemeData(
-      colorScheme: colorScheme,
+      colorScheme: effectiveColorScheme,
       useMaterial3: true,
       textTheme: fontWeight == null
           ? null
@@ -47,9 +55,9 @@ abstract final class ThemeUtils {
       appBarTheme: AppBarTheme(
         elevation: 0,
         titleSpacing: 0,
-        centerTitle: false,
+        centerTitle: Platform.isIOS,
         scrolledUnderElevation: 0,
-        backgroundColor: colorScheme.surface,
+        backgroundColor: Platform.isIOS ? effectiveColorScheme.surface.withValues(alpha: 0.92) : colorScheme.surface,
         titleTextStyle: TextStyle(
           fontSize: 16,
           color: colorScheme.onSurface,
@@ -57,7 +65,18 @@ abstract final class ThemeUtils {
         ),
       ),
       navigationBarTheme: NavigationBarThemeData(
-        surfaceTintColor: isDynamic ? colorScheme.onSurfaceVariant : null,
+        height: Platform.isIOS ? 58 : null,
+        elevation: Platform.isIOS ? 0 : null,
+        backgroundColor: Platform.isIOS
+            ? effectiveColorScheme.surface.withValues(alpha: 0.82)
+            : null,
+        indicatorColor: Platform.isIOS
+            ? Colors.transparent
+            : effectiveColorScheme.secondaryContainer,
+        labelBehavior: Platform.isIOS
+            ? NavigationDestinationLabelBehavior.alwaysShow
+            : null,
+        surfaceTintColor: isDynamic ? effectiveColorScheme.onSurfaceVariant : null,
       ),
       snackBarTheme: SnackBarThemeData(
         actionTextColor: colorScheme.primary,
@@ -90,11 +109,11 @@ abstract final class ThemeUtils {
           color: colorScheme.onSurface,
           fontWeight: fontWeight,
         ),
-        backgroundColor: colorScheme.surface,
+        backgroundColor: Platform.isIOS ? effectiveColorScheme.surface.withValues(alpha: 0.92) : colorScheme.surface,
         constraints: const BoxConstraints(minWidth: 280, maxWidth: 420),
       ),
-      bottomSheetTheme: BottomSheetThemeData(
-        backgroundColor: colorScheme.surface,
+      bottomSheetTheme: BottomSheetThemeData(`r`n        modalBarrierColor: Platform.isIOS ? Colors.black38 : null,
+        backgroundColor: Platform.isIOS ? effectiveColorScheme.surface.withValues(alpha: 0.92) : colorScheme.surface,
         shape: const RoundedRectangleBorder(
           borderRadius: Style.bottomSheetRadius,
         ),
@@ -127,6 +146,7 @@ abstract final class ThemeUtils {
       pageTransitionsTheme: const PageTransitionsTheme(
         builders: {
           TargetPlatform.android: ZoomPageTransitionsBuilder(),
+          TargetPlatform.iOS: CupertinoPageTransitionsBuilder(),
         },
       ),
     );

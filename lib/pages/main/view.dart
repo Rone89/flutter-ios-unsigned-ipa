@@ -22,6 +22,7 @@ import 'package:PiliPlus/utils/platform_utils.dart';
 import 'package:PiliPlus/utils/storage.dart';
 import 'package:PiliPlus/utils/storage_key.dart';
 import 'package:PiliPlus/utils/utils.dart';
+import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
@@ -273,7 +274,7 @@ class _MainAppState extends PopScopeState<MainApp>
   Widget? get _bottomNav {
     Widget? bottomNav;
     if (_mainController.navigationBars.length > 1) {
-      if (_mainController.floatingNavBar) {
+      if (!Platform.isIOS && _mainController.floatingNavBar) {
         bottomNav = Obx(
           () => FloatingNavigationBar(
             onDestinationSelected: _mainController.setIndex,
@@ -289,10 +290,9 @@ class _MainAppState extends PopScopeState<MainApp>
                 .toList(),
           ),
         );
-      } else if (_mainController.enableMYBar) {
-        bottomNav = Obx(
-          () => NavigationBar(
-            maintainBottomViewPadding: true,
+      } else if (Platform.isIOS || _mainController.enableMYBar) {
+        bottomNav = Obx(`r`n          () => NavigationBar(
+            maintainBottomViewPadding: true,`r`n            backgroundColor: Platform.isIOS`r`n                ? CupertinoColors.systemBackground.resolveFrom(context).withValues(alpha: 0.88)`r`n                : null,`r`n            indicatorColor: Platform.isIOS ? Colors.transparent : null,
             onDestinationSelected: _mainController.setIndex,
             selectedIndex: _mainController.selectedIndex.value,
             destinations: _mainController.navigationBars
