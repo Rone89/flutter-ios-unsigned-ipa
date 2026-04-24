@@ -1,4 +1,4 @@
-﻿name: Build unsigned iOS IPA and Release
+name: Build unsigned iOS IPA and Release
 
 on:
   workflow_dispatch:

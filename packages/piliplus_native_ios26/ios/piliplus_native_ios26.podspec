@@ -1,4 +1,4 @@
-﻿Pod::Spec.new do |s|
+Pod::Spec.new do |s|
   s.name             = 'piliplus_native_ios26'
   s.version          = '0.1.0'
   s.summary          = 'Native iOS 26 Liquid Glass SwiftUI surfaces for Flutter.'
