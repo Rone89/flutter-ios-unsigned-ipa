@@ -42,16 +42,18 @@ jobs:
       - name: Patch iOS plugins for runner Xcode SDK
         run: |
           set -euo pipefail
-          PATCH_FILE="$HOME/.pub-cache/hosted/pub.dev/connectivity_plus-7.1.1/ios/connectivity_plus/Sources/connectivity_plus/PathMonitorConnectivityProvider.swift"
-          if [ -f "$PATCH_FILE" ]; then
-            perl -0pi -e 's/path\.isUltraConstrained/false/g' "$PATCH_FILE"
-            grep -n "isUltraConstrained\|false" "$PATCH_FILE" || true
+          CONNECTIVITY_FILE="$HOME/.pub-cache/hosted/pub.dev/connectivity_plus-7.1.1/ios/connectivity_plus/Sources/connectivity_plus/PathMonitorConnectivityProvider.swift"
+          if [ -f "$CONNECTIVITY_FILE" ]; then
+            perl -0pi -e 's/path\.isUltraConstrained/false/g' "$CONNECTIVITY_FILE"
+            grep -n "isUltraConstrained\|false" "$CONNECTIVITY_FILE" || true
           fi
           DEVICE_INFO_FILE="$HOME/.pub-cache/hosted/pub.dev/device_info_plus-12.4.0/ios/device_info_plus/Sources/device_info_plus/FPPDeviceInfoPlusPlugin.m"
           if [ -f "$DEVICE_INFO_FILE" ]; then
             perl -0pi -e 's/\[NSProcessInfo processInfo\]\.isiOSAppOnVision/NO/g' "$DEVICE_INFO_FILE"
             grep -n "isiOSAppOnVision\|NO" "$DEVICE_INFO_FILE" || true
-          fi      - name: Install CocoaPods dependencies
+          fi
+
+      - name: Install CocoaPods dependencies
         run: |
           cd ios
           pod install --repo-update
@@ -97,5 +99,3 @@ jobs:
           files: |
             build/ios/unsigned-ipa/PiliPlus-unsigned.ipa
             build/ios/unsigned-ipa/PiliPlus-unsigned.ipa.sha256
-
-
